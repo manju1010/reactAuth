@@ -1,33 +1,18 @@
 import React, { useState } from 'react';
-import { Database } from 'firebase/database';
-import { app, database } from '../firebaseConfig';
+import { useLocation } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
+import { collection, addDoc } from 'firebase/firestore';
+import { app, database } from '../firebaseConfig';
 import googleLogo from '../assests/google-logo.svg';
 import githubLogo from '../assests/github-logo.svg';
-import { collection, addDoc } from 'firebase/firestore';
 
 const auth = getAuth(app);
 const collectionRef = collection(database, 'users');
 
-const handleSubmit = ()=>{
-    addDoc(collectionRef,{
-        email:email,
-        password:password
-    })
-    .then(
-        ()=>{
-            alert("Data added successfuly")
-        }
-    )
-    .catch(
-        (err)=>{
-            alert(err.message)
-        }
-    )
-}
-
 const Login = () => {
-  const [state, setState] = useState('sign up');
+  const location = useLocation();
+  const initialState = location.state?.pageState || 'sign up'; 
+  const [state, setState] = useState(initialState);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -39,12 +24,13 @@ const Login = () => {
       createUserWithEmailAndPassword(auth, email, password)
         .then((response) => {
           console.log(response.user);
+          addDoc(collectionRef, { email, password })
+            .then(() => alert('Data added successfully'))
+            .catch((err) => alert(err.message));
         })
-        .catch((err) => {
-          console.log(err.message);
-        });
+        .catch((err) => console.log(err.message));
     } else {
-      console.log({ email, password });
+      console.log('Login credentials:', { email, password });
     }
   };
 
@@ -52,9 +38,9 @@ const Login = () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log("Google Sign-in Successful: ", result.user);
+      console.log('Google Sign-in Successful: ', result.user);
     } catch (error) {
-      console.error("Google Sign-in Error: ", error);
+      console.error('Google Sign-in Error: ', error);
     }
   };
 
@@ -62,9 +48,9 @@ const Login = () => {
     const provider = new GithubAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log("GitHub Sign-in Successful: ", result.user);
+      console.log('GitHub Sign-in Successful: ', result.user);
     } catch (error) {
-      console.error("GitHub Sign-in Error: ", error);
+      console.error('GitHub Sign-in Error: ', error);
     }
   };
 
@@ -74,9 +60,7 @@ const Login = () => {
         <p className="text-2xl font-semibold">
           {state === 'sign up' ? 'Create Account' : 'Login'}
         </p>
-        <p>
-          Please {state === 'sign up' ? 'sign up' : 'login'} 
-        </p>
+        <p>Please {state === 'sign up' ? 'sign up' : 'login'} below</p>
         {state === 'sign up' && (
           <div className="w-full">
             <p>Full Name</p>
@@ -127,7 +111,7 @@ const Login = () => {
             className="flex items-center justify-center bg-white border border-gray-300 rounded-md w-full py-2 gap-2"
             onClick={handleGoogleSignIn}
           >
-        <img src={googleLogo} alt="Google" className="w-5 h-5" />
+            <img src={googleLogo} alt="Google" className="w-5 h-5" />
             <span>Google</span>
           </button>
           <button

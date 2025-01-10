@@ -1,36 +1,41 @@
-import React from 'react'
+import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
-
 const Navbar = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   return (
+    <div className="mx-4 sm:mx-[10%]">
+      <div className="flex items-center justify-between text-sm py-4 mb-5 gap-10 border-b border-b-gray-400">
+        {/* Left Side Navigation Links */}
+        <ul className="hidden md:flex items-start gap-7 font-medium">
+          <NavLink to="/">
+            <li className="py-4">HOME</li>
+          </NavLink>
+          <NavLink to="/dashboard">
+            <li className="py-4">DASHBOARD</li>
+          </NavLink>
+        </ul>
 
-   
-    <div className='mx-4 sm:mx-[10%]'>
-    <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400">
-       <ul className="hidden md:flex items-start gap-5 font-medium">
-        <NavLink to="/">
-          <li className=" py-4">HOME</li>
-         
-        </NavLink>
-
-        <NavLink to="/">
-          <li className="py-4"> DASHBOARD</li>
-          
-        </NavLink>
-    </ul>
-
-    <button
-            onClick={() => navigate('/login')}
-            className="bg-primary text-white px-8 py-3 rounded-full font-light  hidden md:block"
+        {/* Right Side Buttons */}
+        <div className="flex gap-5">
+          <button
+            onClick={() => navigate('/login', { state: { pageState: 'sign up' } })}
+            className="bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block"
           >
-            
-            CREATE ACCOUNT
+            SIGN UP
           </button>
-    </div>
-    </div>
-  )
-}
 
-export default Navbar
+          <button
+            onClick={() => navigate('/login', { state: { pageState: 'login' } })}
+            className="bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block"
+          >
+            Login
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Navbar;
